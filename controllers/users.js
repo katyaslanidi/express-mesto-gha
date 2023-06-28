@@ -11,12 +11,12 @@ module.exports.getUsers = (req, res) => {
 
 module.exports.getUserById = (req, res) => {
   const { _id } = req.params;
-  User.findById(_id)
-    .then((users) => {
-      if (!users[_id]) {
+  User.findById({_id})
+    .then((user) => {
+      if (!user) {
         return res.status(NOT_FOUND.error_code).send({ message: NOT_FOUND.message });
       }
-      res.send(users[_id]);
+      res.send({user});
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -28,7 +28,7 @@ module.exports.getUserById = (req, res) => {
 };
 
 module.exports.createUser = (req, res) => {
-  console.log(req.user._id);
+  // console.log(req.user._id);
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
     .then((user) => res.send(user))
@@ -43,7 +43,7 @@ module.exports.createUser = (req, res) => {
 
 module.exports.updateUserInfo = (req, res) => {
   const { name, about } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name, about })
+  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
         return res.status(NOT_FOUND.error_code).send({ message: NOT_FOUND.message });
@@ -62,7 +62,7 @@ module.exports.updateUserInfo = (req, res) => {
 
 module.exports.updateUserAvatar = (req, res) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { avatar })
+  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .then((newAvatar) => {
       if (!newAvatar) {
         return res.status(NOT_FOUND.error_code).send({ message: NOT_FOUND.message });
