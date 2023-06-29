@@ -24,21 +24,40 @@ module.exports.createCard = (req, res) => {
 };
 
 module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndDelete(req.params._id)
+  Card.findByIdAndDelete(req.params.cardId)
     .then((card) => {
       if (!card) {
         return res.status(NOT_FOUND.error_code).send({ message: NOT_FOUND.message });
       }
-      res.send(card);
+      if (card.owner.toString() === req.user._id) {
+        Card.deleteOne({ _id: req.params.cardId})
+          .then(res.send(card));
+      }
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
         return res.status(BAD_REQUEST.error_code).send({ message: BAD_REQUEST.message });
       } else {
         return res.status(INTERNAL_SERVER_ERROR.error_code).send({ message: INTERNAL_SERVER_ERROR.message });
       }
     })
 };
+
+// module.exports.deleteCard = (req, res, next) => {
+//   Card.findById(req.params.id)
+//     .then((card) => {
+//       if (!card) {
+//         throw new NotFound('Карточка с указанным _id не найдена.');
+//       }
+//       if (card.owner.toString() === req.user._id) {
+//         return Card.deleteOne({ _id: req.params.id }).then(res.status(200).send(card));
+//       } else {
+//         throw new Forbidden('Это не ваша карточка');
+//       }
+//     })
+//     .catch(next);
+// };
+
 
 module.exports.likeCard = (req, res) => {
   Card.findByIdAndUpdate(
