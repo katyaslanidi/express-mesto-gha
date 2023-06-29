@@ -1,9 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-
-const usersRouter = require('./routes/users');
-const cardsRouter = require('./routes/cards');
+const router = require('./routes');
 
 const app = express();
 
@@ -19,12 +17,9 @@ app.use((req, res, next) => {
   req.user = {
     _id: '649ad946a70b943ca8b2f9ae'
   };
-
   next();
 });
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-app.use(usersRouter);
-app.use(cardsRouter);
+app.use(router);

@@ -43,26 +43,10 @@ module.exports.deleteCard = (req, res) => {
     })
 };
 
-// module.exports.deleteCard = (req, res, next) => {
-//   Card.findById(req.params.id)
-//     .then((card) => {
-//       if (!card) {
-//         throw new NotFound('Карточка с указанным _id не найдена.');
-//       }
-//       if (card.owner.toString() === req.user._id) {
-//         return Card.deleteOne({ _id: req.params.id }).then(res.status(200).send(card));
-//       } else {
-//         throw new Forbidden('Это не ваша карточка');
-//       }
-//     })
-//     .catch(next);
-// };
-
-
 module.exports.likeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
-    { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
+    { $addToSet: { likes: req.user._id } },
     { new: true },)
     .then((card) => {
       if (!card) {
@@ -82,7 +66,7 @@ module.exports.likeCard = (req, res) => {
 module.exports.dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
-    { $pull: { likes: req.user._id } }, // убрать _id из массива
+    { $pull: { likes: req.user._id } },
     { new: true },)
     .then((card) => {
       if (!card) {
