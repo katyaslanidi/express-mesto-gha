@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Card = require('../models/card');
 const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR } = require('../utils/errors');
 
@@ -15,7 +16,7 @@ module.exports.createCard = (req, res) => {
   Card.create({ name, link, owner })
     .then((card) => res.send(card))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err instanceof mongoose.Error.ValidationError) {
         return res.status(BAD_REQUEST.error_code).send({ message: BAD_REQUEST.message });
       } else {
         return res.status(INTERNAL_SERVER_ERROR.error_code).send({ message: INTERNAL_SERVER_ERROR.message });
@@ -31,11 +32,14 @@ module.exports.deleteCard = (req, res) => {
       }
       if (card.owner.toString() === req.user._id) {
         Card.deleteOne({ _id: req.params.cardId})
-          .then(res.send(card));
+          .then(res.send(card))
+          .catch(() => {
+            return res.status(INTERNAL_SERVER_ERROR.error_code).send({ message: INTERNAL_SERVER_ERROR.message });
+          })
       }
     })
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err instanceof mongoose.Error.CastError) {
         return res.status(BAD_REQUEST.error_code).send({ message: BAD_REQUEST.message });
       } else {
         return res.status(INTERNAL_SERVER_ERROR.error_code).send({ message: INTERNAL_SERVER_ERROR.message });
@@ -55,7 +59,7 @@ module.exports.likeCard = (req, res) => {
       res.send(card);
     })
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err instanceof mongoose.Error.CastError) {
         return res.status(BAD_REQUEST.error_code).send({ message: BAD_REQUEST.message });
       } else {
         return res.status(INTERNAL_SERVER_ERROR.error_code).send({ message: INTERNAL_SERVER_ERROR.message });
@@ -75,7 +79,7 @@ module.exports.dislikeCard = (req, res) => {
       res.send(card);
     })
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err instanceof mongoose.Error.CastError) {
         return res.status(BAD_REQUEST.error_code).send({ message: BAD_REQUEST.message });
       } else {
         return res.status(INTERNAL_SERVER_ERROR.error_code).send({ message: INTERNAL_SERVER_ERROR.message });
