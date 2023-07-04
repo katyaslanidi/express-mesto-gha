@@ -36,6 +36,8 @@ module.exports.deleteCard = (req, res) => {
           .catch(() => {
             return res.status(INTERNAL_SERVER_ERROR.error_code).send({ message: INTERNAL_SERVER_ERROR.message });
           })
+      } else {
+        res.status(400).send({ message: 'Это карточка другого пользователя' });
       }
     })
     .catch((err) => {
