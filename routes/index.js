@@ -6,8 +6,8 @@ const { NOT_FOUND } = require('../utils/errors');
 router.use(usersRouter);
 router.use(cardsRouter);
 
-router.use((req, res) => {
-  return res.status(NOT_FOUND.error_code).send({ message: NOT_FOUND.message });
+router.use((req, res, next) => {
+  return next(new NOT_FOUND('Такого роута не существует'));
 });
 
 module.exports = router;

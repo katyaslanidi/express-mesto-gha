@@ -1,34 +1,30 @@
 const mongoose = require('mongoose');
 const Card = require('../models/card');
-const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR } = require('../utils/errors');
+const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR, FORBIDDEN_ERROR, CONFLICT_ERROR, UNAUTHORIZED_ERROR } = require('../utils/errors');
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send(cards))
-    .catch(() => {
-      return res.status(INTERNAL_SERVER_ERROR.error_code).send({ message: INTERNAL_SERVER_ERROR.message });
-    })
+    .catch(next);
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
   Card.create({ name, link, owner })
-    .then((card) => res.send(card))
+    .then((card) => res.status(201).send(card))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        return res.status(BAD_REQUEST.error_code).send({ message: BAD_REQUEST.message });
-      } else {
-        return res.status(INTERNAL_SERVER_ERROR.error_code).send({ message: INTERNAL_SERVER_ERROR.message });
-      }
+        return next(new BAD_REQUEST('Переданы некорректные данные'))
+      } else next(err);
     })
 };
 
-module.exports.deleteCard = (req, res) => {
+module.exports.deleteCard = (req, res, next) => {
   Card.findByIdAndDelete(req.params.cardId)
     .then((card) => {
       if (!card) {
-        return res.status(NOT_FOUND.error_code).send({ message: NOT_FOUND.message });
+        return next(new NOT_FOUND('Пользователь не найден'));
       }
       if (card.owner.toString() === req.user._id) {
         Card.deleteOne({ _id: req.params.cardId})
@@ -37,35 +33,27 @@ module.exports.deleteCard = (req, res) => {
             return res.status(INTERNAL_SERVER_ERROR.error_code).send({ message: INTERNAL_SERVER_ERROR.message });
           })
       } else {
-        res.status(400).send({ message: 'Это карточка другого пользователя' });
+        return next(new FORBIDDEN_ERROR('Это карточка другого пользователя'));
       }
     })
-    .catch((err) => {
-      if (err instanceof mongoose.Error.CastError) {
-        return res.status(BAD_REQUEST.error_code).send({ message: BAD_REQUEST.message });
-      } else {
-        return res.status(INTERNAL_SERVER_ERROR.error_code).send({ message: INTERNAL_SERVER_ERROR.message });
-      }
-    })
+    .catch(next);
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
     { new: true },)
     .then((card) => {
       if (!card) {
-        return res.status(NOT_FOUND.error_code).send({ message: NOT_FOUND.message });
+        return next(new NOT_FOUND('Пользователь не найден'));
       }
-      res.send(card);
+      res.status(201).send(card);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        return res.status(BAD_REQUEST.error_code).send({ message: BAD_REQUEST.message });
-      } else {
-        return res.status(INTERNAL_SERVER_ERROR.error_code).send({ message: INTERNAL_SERVER_ERROR.message });
-      }
+        return next(new BAD_REQUEST('Переданы некорректные данные'))
+      } else next(err);
     })
 };
 
@@ -76,15 +64,13 @@ module.exports.dislikeCard = (req, res) => {
     { new: true },)
     .then((card) => {
       if (!card) {
-        return res.status(NOT_FOUND.error_code).send({ message: NOT_FOUND.message });
+        return next(new NOT_FOUND('Пользователь не найден'));
       }
       res.send(card);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        return res.status(BAD_REQUEST.error_code).send({ message: BAD_REQUEST.message });
-      } else {
-        return res.status(INTERNAL_SERVER_ERROR.error_code).send({ message: INTERNAL_SERVER_ERROR.message });
-      }
+        return next(new BAD_REQUEST('Переданы некорректные данные'))
+      } else next(err);
     })
 };

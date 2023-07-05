@@ -1,14 +1,41 @@
-module.exports.BAD_REQUEST = {
-  error_code: 400,
-  message: "Произошла ошибка. Переданы некорректные данные."
-}
+module.exports = class BAD_REQUEST extends Error {
+  constructor(message) {
+    super(message);
+    this.statusCode = 400;
+  }
+};
 
-module.exports.NOT_FOUND = {
-  error_code: 404,
-  message: "Карточка или пользователь не найден."
-}
+module.exports = class NOT_FOUND extends Error {
+  constructor(message) {
+    super(message);
+    this.statusCode = 404;
+  }
+};
 
-module.exports.INTERNAL_SERVER_ERROR = {
-  error_code: 500,
-  message: "Ошибка по-умолчанию."
-}
+module.exports = class INTERNAL_SERVER_ERROR extends Error {
+  constructor(message) {
+    super(message);
+    this.statusCode = 500;
+  }
+};
+
+module.exports = class CONFLICT_ERROR extends Error {
+  constructor(message) {
+    super(message);
+    this.statusCode = 409;
+  }
+};
+
+module.exports = class UNAUTHORIZED_ERROR extends Error {
+  constructor(message) {
+    super(message);
+    this.statusCode = 401;
+  }
+};
+
+module.exports = class FORBIDDEN_ERROR extends Error {
+  constructor(message) {
+    super(message);
+    this.statusCode = 403;
+  }
+};
