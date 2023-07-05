@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const router = require('./routes');
 const auth = require('./middlewares/auth');
-const { login, createUser } = require('./controllers/users');
+const { login, registration } = require('./controllers/users');
 // const login = require('./routes/users');
 // const createUser = require('./routes/users');
 
@@ -20,7 +20,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.post('/signin', login);
-app.post('/signup', createUser);
+app.post('/signup', registration);
 app.use(auth);
 
 app.use(router);
