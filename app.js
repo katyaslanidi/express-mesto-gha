@@ -1,6 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const cookie = require("cookie-parser")
+// const cookie = require("cookie-parser")
 
 const { errors } = require('celebrate');
 const errorHandler = require('./errors/errorHandler');
@@ -14,12 +14,12 @@ const app = express();
 
 const { PORT = 3000 } = process.env;
 
-mongoose.set('strictQuery', true);
+// mongoose.set('strictQuery', true);
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(cookie());
+// app.use(cookie());
 app.use(auth);
 app.use(router);
 // app.use((req, res, next) => next(new NotFound('Страницы по данному url не существует')));
