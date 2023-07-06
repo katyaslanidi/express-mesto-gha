@@ -7,7 +7,7 @@ const authRoutes = require('./routes/auth');
 const cardsRoutes = require('./routes/cards');
 const usersRoutes = require('./routes/users');
 const router = require('./routes/index');
-const { NOT_FOUND } = require('./utils/errors');
+const { NotFound } = require('./errors/errors');
 
 const app = express();
 
@@ -23,22 +23,8 @@ app.use(auth);
 app.use('/users', usersRoutes);
 app.use('/cards', cardsRoutes);
 app.use(router);
-app.use((req, res, next) => next(new NOT_FOUND('Страницы по данному url не существует')));
+app.use((req, res, next) => next(new NotFound('Страницы по данному url не существует')));
 app.use((errors()));
 app.listen(PORT, () => {
   console.log(`Сервер запущен, PORT = ${PORT}`);
 });
-// app.post('/signin', login);
-// app.post('/signup', registration);
-// app.use(authRoutes);
-// app.use(auth);
-// app.use(router);
-// app.use(errors());
-// app.use((err, req, res, next) => {
-//   const { statusCode = 500, message } = err;
-//   res.status(statusCode)
-//     .send({
-//       message: statusCode === 500 ? 'На сервере произошла ошибка' : message
-//     });
-//     next();
-// });

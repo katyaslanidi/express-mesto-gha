@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Card = require('../models/card');
-const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR, FORBIDDEN_ERROR, CONFLICT_ERROR, UNAUTHORIZED_ERROR } = require('../utils/errors');
+const { BadRequest, NotFound, InternalServerError, ForbiddenError } = require('../errors/errors');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
@@ -15,7 +15,7 @@ module.exports.createCard = (req, res, next) => {
     .then((card) => res.status(201).send(card))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        return next(new BAD_REQUEST('Переданы некорректные данные'))
+        return next(new BadRequest('Переданы некорректные данные'))
       } else next(err);
     })
 };
@@ -24,16 +24,16 @@ module.exports.deleteCard = (req, res, next) => {
   Card.findByIdAndDelete(req.params.cardId)
     .then((card) => {
       if (!card) {
-        return next(new NOT_FOUND('Пользователь не найден'));
+        return next(new NotFound('Пользователь не найден'));
       }
       if (card.owner.toString() === req.user._id) {
         Card.deleteOne({ _id: req.params.cardId})
           .then(res.send(card))
           .catch(() => {
-            return res.status(INTERNAL_SERVER_ERROR.error_code).send({ message: INTERNAL_SERVER_ERROR.message });
+            return res.status(InternalServerError.error_code).send({ message: InternalServerError.message });
           })
       } else {
-        return next(new FORBIDDEN_ERROR('Это карточка другого пользователя'));
+        return next(new ForbiddenError('Это карточка другого пользователя'));
       }
     })
     .catch(next);
@@ -46,13 +46,13 @@ module.exports.likeCard = (req, res, next) => {
     { new: true },)
     .then((card) => {
       if (!card) {
-        return next(new NOT_FOUND('Пользователь не найден'));
+        return next(new NotFound('Пользователь не найден'));
       }
       res.status(201).send(card);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        return next(new BAD_REQUEST('Переданы некорректные данные'))
+        return next(new BadRequest('Переданы некорректные данные'))
       } else next(err);
     })
 };
@@ -64,13 +64,13 @@ module.exports.dislikeCard = (req, res) => {
     { new: true },)
     .then((card) => {
       if (!card) {
-        return next(new NOT_FOUND('Пользователь не найден'));
+        return next(new NotFound('Пользователь не найден'));
       }
       res.send(card);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        return next(new BAD_REQUEST('Переданы некорректные данные'))
+        return next(new BadRequest('Переданы некорректные данные'))
       } else next(err);
     })
 };
