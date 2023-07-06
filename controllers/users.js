@@ -3,6 +3,7 @@ const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { BadRequest, NotFound, ConflictError, UnauthorizedError } = require('../errors/errors');
+const { secretKey } = require('../middlewares/auth');
 
 module.exports.registration = (req, res, next) => {
   const { name, about, avatar, email, password } = req.body;
@@ -27,7 +28,6 @@ module.exports.registration = (req, res, next) => {
 
 };
 
-
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
@@ -44,15 +44,13 @@ module.exports.login = (req, res, next) => {
               }
               const token = jwt.sing(
                 { _id: user._id },
-                'some-secret-key',
+                secretKey,
                 { expiresIn: '7d' }
               );
-              // res.cookie('jwt', token, {
-              //   maxAge: 3600000,
-              //   httpOnly: true,
-              //   sameSite: true
-              // });
-              // res.header('Content-Type', 'application/json');
+              res.cookie("jwt", token, {
+                maxAge: 604800,
+                httpOnly: true,
+              });
               return res.status(200).send({ token });
             })
         })
