@@ -55,9 +55,7 @@ module.exports.login = (req, res, next) => {
             })
         })
     })
-    .catch(() => {
-      next(new UnauthorizedError('Неправильные почта или пароль'));
-    })
+    .catch((err) => next(err));
 };
 
 module.exports.getMyUser = (reй, res, next) => {
