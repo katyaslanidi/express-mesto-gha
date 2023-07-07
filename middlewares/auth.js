@@ -12,14 +12,16 @@ module.exports = (req, res, next) => {
 
   const token = req.cookies.jwt;
   if (!token) {
-    return next(new ForbiddenError('Доступ к запрошенному ресурсу запрещен'));
+    return next('тут');
+    // return next(new ForbiddenError('Доступ к запрошенному ресурсу запрещен'));
   }
   try {
     const payload = jwt.verify(token, secretKey);
     req.user = payload;
     return next();
   } catch {
-    return next(new ForbiddenError('Доступ к запрошенному ресурсу запрещен'));
+    return next('catch');
+    // return next(new ForbiddenError('Доступ к запрошенному ресурсу запрещен'));
   }
   // let payload;
 
