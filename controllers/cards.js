@@ -9,9 +9,13 @@ module.exports.getCards = (req, res, next) => {
 };
 
 module.exports.createCard = (req, res, next) => {
-  const { name, link } = req.body;
-  const owner = req.user._id;
-  Card.create({ name, link, owner })
+  // const { name, link } = req.body;
+  // const owner = req.user._id;
+  Card.create({
+    name: req.body.name,
+    link: req.body.link,
+    owner: req.user._id
+  })
     .then((card) => res.status(201).send(card))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
@@ -27,7 +31,7 @@ module.exports.deleteCard = (req, res, next) => {
         return next(new NotFound('Пользователь не найден'));
       }
       if (card.owner.toString() === req.user._id) {
-        Card.deleteOne({ _id: req.params.cardId})
+        Card.deleteOne({ _id: req.params.cardId })
           .then(res.send(card))
           .catch(() => {
             return res.status(InternalServerError.error_code).send({ message: InternalServerError.message });
