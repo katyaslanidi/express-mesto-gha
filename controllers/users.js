@@ -102,7 +102,7 @@ const updateUserData = (data, req, res) => {
       }
     })
     .catch((err) => {
-      if (err instanceof (mongoose.Error.ValidationError || mongoose.Error.CastError)) {
+      if (err instanceof (mongoose.Error.ValidationError)) {
         return next(new BadRequest('Переданы некорректные данные'));
       } else next(err);
     })
