@@ -47,12 +47,13 @@ module.exports.login = (req, res, next) => {
                 secretKey,
                 { expiresIn: '7d' }
               );
-              res.cookie("jwt", token, {
-                maxAge: 604800,
-                httpOnly: true,
-                sameSite: true
-              });
-              return res.status(200).send({ token });
+              return res
+                .cookie("jwt", token, {
+                  maxAge: 604800,
+                  httpOnly: true,
+                  sameSite: true
+                })
+                .status(200).send({ token });
             })
         })
     })
