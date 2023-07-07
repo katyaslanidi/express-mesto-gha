@@ -1,8 +1,10 @@
 const router = require('express').Router();
+
 const registrationRouter = require('./singup');
 const loginRouter = require('./singin');
 const usersRouter = require('./users');
 const cardsRouter = require('./cards');
+
 const auth = require('../middlewares/auth');
 
 const { NotFound } = require('../errors/errors');

@@ -1,5 +1,5 @@
 const { celebrate, Joi } = require('celebrate');
-const urlRegex = require('../utils/constants');
+const { urlRegex } = require('../config');
 
 module.exports.registrationValidation = celebrate({
   body: Joi.object({
