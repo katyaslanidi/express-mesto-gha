@@ -12,13 +12,6 @@ class NotFound extends Error {
   }
 };
 
-// class InternalServerError extends Error {
-//   constructor(message) {
-//     super(message);
-//     this.statusCode = 500;
-//   }
-// };
-
 class ConflictError extends Error {
   constructor(message) {
     super(message);

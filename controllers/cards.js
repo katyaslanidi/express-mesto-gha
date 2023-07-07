@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Card = require('../models/card');
-const { BadRequest, NotFound, InternalServerError, ForbiddenError } = require('../errors/errors');
+const { BadRequest, NotFound, ForbiddenError } = require('../errors/errors');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
@@ -9,8 +9,6 @@ module.exports.getCards = (req, res, next) => {
 };
 
 module.exports.createCard = (req, res, next) => {
-  // const { name, link } = req.body;
-  // const owner = req.user._id;
   Card.create({
     name: req.body.name,
     link: req.body.link,
@@ -37,15 +35,6 @@ module.exports.deleteCard = (req, res, next) => {
         return next(new ForbiddenError('Это карточка другого пользователя'));
       }
       return Card.findByIdAndDelete(cardId);
-      //   if (card.owner.toString() === req.user._id) {
-      //     Card.deleteOne({ _id: req.params.cardId })
-      //       .then(res.send(card))
-      //       .catch(() => {
-      //         return res.status(InternalServerError.error_code).send({ message: InternalServerError.message });
-      //       })
-      //   } else {
-      //     return next(new ForbiddenError('Это карточка другого пользователя'));
-      //   }
     })
     .then((deletedCard) => {
       if (!deletedCard) {
