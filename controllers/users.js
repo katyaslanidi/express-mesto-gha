@@ -4,7 +4,6 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { BadRequest, NotFound, ConflictError, UnauthorizedError } = require('../errors/errors');
 const { NODE_ENV, JWT_SECRET } = process.env;
-// const { secretKey } = require('../middlewares/auth');
 
 module.exports.registration = (req, res, next) => {
   const { name, about, avatar, email, password } = req.body;
@@ -49,15 +48,6 @@ module.exports.login = (req, res, next) => {
                 { expiresIn: '7d' }
               );
               return res.send({ token });
-              // console.log(token);
-              // res
-              //   .status(200)
-              //   .cookie("jwt", token, {
-              //     maxAge: 604800,
-              //     httpOnly: true,
-              //   })
-              //   .send({ token })
-              //   .end();
             })
         })
     })

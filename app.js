@@ -1,7 +1,6 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-// const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const { errors } = require('celebrate');
 const { PORT, bdUrl } = require('./config');
@@ -11,11 +10,8 @@ const router = require('./routes');
 
 const app = express();
 
-// const { PORT = 3002 } = process.env;
-
 mongoose.connect(bdUrl);
 
-// app.use(cookieParser());
 app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
