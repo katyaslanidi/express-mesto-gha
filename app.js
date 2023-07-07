@@ -10,6 +10,8 @@ const router = require('./routes');
 
 const app = express();
 
+app.use(cookieParser());
+
 const { PORT = 3000 } = process.env;
 
 mongoose.connect('mongodb://localhost:27017/mestodb');
@@ -17,7 +19,6 @@ mongoose.connect('mongodb://localhost:27017/mestodb');
 app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
 app.use(errors());
 
 // app.use(auth);

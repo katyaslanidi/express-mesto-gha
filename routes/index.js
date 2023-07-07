@@ -9,7 +9,7 @@ const { NotFound } = require('../errors/errors');
 
 router.use('/', registrationRouter);
 router.use('/', loginRouter);
-router.use('/', auth);
+router.use(auth);
 router.use('/users', usersRouter);
 router.use('/cards', cardsRouter);
 

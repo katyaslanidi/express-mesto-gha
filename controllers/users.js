@@ -30,8 +30,8 @@ module.exports.registration = (req, res, next) => {
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-  return User.findUserByCredentials(email, password)
-    .then(() => {
+  // return User.findUserByCredentials(email, password)
+  //   .then(() => {
       User.findOne({ email }).select('+password')
         .then((user) => {
           if (!user) {
@@ -44,19 +44,20 @@ module.exports.login = (req, res, next) => {
               }
               const token = jwt.sing(
                 { _id: user._id },
-                secretKey,
+                "YOUR_SECRET_KEY",
                 { expiresIn: '7d' }
               );
               return res
                 .cookie("jwt", token, {
                   maxAge: 604800,
                   httpOnly: true,
-                  sameSite: true
+                  // sameSite: true,
+                  // secure: process.env.NODE_ENV === "production"
                 })
                 .status(200).send({ token });
             })
         })
-    })
+    // })
     .catch((err) => next(err));
 };
 
