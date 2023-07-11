@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { BadRequest, NotFound, ConflictError } = require('../errors/errors');
+const { BadRequest, NotFound, ConflictError, UnauthorizedError } = require('../errors/errors');
 const { NODE_ENV, JWT_SECRET } = process.env;
 
 module.exports.registration = (req, res, next) => {
@@ -31,17 +31,40 @@ module.exports.registration = (req, res, next) => {
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
-  return User.findUserByCredentials(email, password)
-    .then(({ _id: _id }) => {
-      const token = jwt.sign(
-        { _id },
-        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
-        { expiresIn: '7d' }
-      );
-      return res.send({ token });
+  User.findOne({ email })
+    .select('+password')
+    .then((user) => {
+      if (!user) {
+        return next(new UnauthorizedError('Неверная почта или пароль'));
+      }
+      return bcrypt.compare(password, user.password).then((matched) => {
+        if (!matched) {
+          return next(new UnauthorizedError('Неверная почта или пароль'));
+        }
+        const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', {
+          expiresIn: '7d',
+        });
+        return res.send({ token });
+      });
     })
     .catch((err) => next(err));
 };
+
+
+// module.exports.login = (req, res, next) => {
+//   const { email, password } = req.body;
+
+//   return User.findUserByCredentials(email, password)
+//     .then(({ _id: _id }) => {
+//       const token = jwt.sign(
+//         { _id },
+//         NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+//         { expiresIn: '7d' }
+//       );
+//       return res.send({ token });
+//     })
+//     .catch((err) => next(err));
+// };
 
 module.exports.getMyUser = (req, res, next) => {
   User.findById(req.user._id)
