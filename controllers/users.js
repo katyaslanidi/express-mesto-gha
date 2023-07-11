@@ -29,30 +29,40 @@ module.exports.registration = (req, res, next) => {
 };
 
 module.exports.login = (req, res, next) => {
-  const { email, password } = req.body;
-  return User.findUserByCredentials(email, password)
-    .then(() => {
-      User.findOne({ email }).select('+password')
-        .then((user) => {
-          if (!user) {
-            return next(new UnauthorizedError('Неправильные почта или пароль'));
-          }
-          return bcrypt.compare(password, user.password)
-            .then((matched) => {
-              if (!matched) {
-                return next(new UnauthorizedError('Неправильные почта или пароль'));
-              }
-              const token = jwt.sign(
-                { _id: user._id },
-                NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
-                { expiresIn: '7d' }
-              );
-              return res.send({ token });
-            })
-        })
+  // const { email, password } = req.body;
+  User.findUserByCredentials({ email: req.body.email, password: req.body.password })
+    .then(({ _id: _id }) => {
+      const token = jwt.sign(
+        { _id },
+        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+        { expiresIn: '7d' }
+      );
+      return res.send({ token });
     })
     .catch((err) => next(err));
 };
+
+// .then(() => {
+//   User.findOne({ email }).select('+password')
+//     .then((user) => {
+//       if (!user) {
+//         return next(new UnauthorizedError('Неправильные почта или пароль'));
+//       }
+//       return bcrypt.compare(password, user.password)
+//         .then((matched) => {
+//           if (!matched) {
+//             return next(new UnauthorizedError('Неправильные почта или пароль'));
+//           }
+//           const token = jwt.sign(
+//             { _id: user._id },
+//             NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+//             { expiresIn: '7d' }
+//           );
+//           return res.send({ token });
+//         })
+//     })
+// })
+// .catch((err) => next(err));
 
 module.exports.getMyUser = (reй, res, next) => {
   User.findById(req.user._id)

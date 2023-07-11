@@ -4,7 +4,8 @@ const { BadRequest, NotFound, ForbiddenError } = require('../errors/errors');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
-    .then((cards) => res.send(cards))
+    .populate(['owner', 'likes'])
+    .then((cards) => res.send({ data: cards }))
     .catch(next);
 };
 
@@ -14,7 +15,7 @@ module.exports.createCard = (req, res, next) => {
     link: req.body.link,
     owner: req.user._id
   })
-    .then((card) => res.status(201).send(card))
+    .then((card) => res.status(201).send({ data: card }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         return next(new BadRequest('Переданы некорректные данные'))
@@ -54,7 +55,7 @@ module.exports.likeCard = (req, res, next) => {
       if (!card) {
         return next(new NotFound('Пользователь не найден'));
       }
-      res.status(200).send(card);
+      res.status(200).send({ data: card });
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
@@ -72,7 +73,7 @@ module.exports.dislikeCard = (req, res) => {
       if (!card) {
         return next(new NotFound('Пользователь не найден'));
       }
-      res.send(card);
+      res.send({ data: card });
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {

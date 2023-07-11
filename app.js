@@ -8,9 +8,9 @@ const { PORT, bdUrl } = require('./config');
 const errorHandler = require('./errors/errorHandler');
 const router = require('./routes');
 
-const app = express();
-
 mongoose.connect(bdUrl);
+
+const app = express();
 
 app.use(helmet());
 app.use(express.json());
