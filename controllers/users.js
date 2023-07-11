@@ -42,7 +42,7 @@ module.exports.login = (req, res, next) => {
               if (!matched) {
                 return next(new UnauthorizedError('Неправильные почта или пароль'));
               }
-              const token = jwt.sing(
+              const token = jwt.sign(
                 { _id: user._id },
                 NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
                 { expiresIn: '7d' }
