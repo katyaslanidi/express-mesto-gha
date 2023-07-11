@@ -10,11 +10,11 @@ module.exports.registration = (req, res, next) => {
   bcrypt.hash(password, 10)
     .then((hash) =>
       User.create({ name, about, avatar, email, password: hash })
-        .then((user) => {
-          const { _id } = user;
+        .then(() => {
+          // const { _id } = user;
           res.status(201).send(
             {
-              data: { name, about, avatar, email, _id }
+              data: { name, about, avatar, email }
             }
           );
         }))

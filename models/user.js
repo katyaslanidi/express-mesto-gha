@@ -20,8 +20,9 @@ const userSchema = new mongoose.Schema({
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     validate: {
       validator: (url) => urlRegex.test(url),
-    },
-    email: {
+    }
+  },
+  email: {
       type: String,
       required: true,
       unique: true,
@@ -34,9 +35,8 @@ const userSchema = new mongoose.Schema({
     password: {
       type: String,
       required: true,
-      select: false
+      // select: false
     }
-}
 });
 
 module.exports = mongoose.model('user', userSchema);
