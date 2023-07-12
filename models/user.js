@@ -23,20 +23,20 @@ const userSchema = new mongoose.Schema({
     }
   },
   email: {
-      type: String,
-      required: true,
-      unique: true,
-      validate: {
-        validator: (email) => {
-          validator.isEmail(email);
-        }
+    type: String,
+    required: true,
+    unique: true,
+    validate: {
+      validator: (email) => {
+        validator.isEmail(email);
       }
-    },
-    password: {
-      type: String,
-      required: true,
-      // select: false
     }
+  },
+  password: {
+    type: String,
+    required: true,
+    select: false
+  }
 });
 
 module.exports = mongoose.model('user', userSchema);

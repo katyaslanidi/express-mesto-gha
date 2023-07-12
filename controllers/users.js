@@ -11,7 +11,6 @@ module.exports.registration = (req, res, next) => {
     .then((hash) =>
       User.create({ name, about, avatar, email, password: hash })
         .then(() => {
-          // const { _id } = user;
           res.status(201).send(
             {
               data: { name, about, avatar, email }
@@ -30,7 +29,6 @@ module.exports.registration = (req, res, next) => {
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-
   User.findOne({ email })
     .select('+password')
     .then((user) => {
@@ -41,30 +39,16 @@ module.exports.login = (req, res, next) => {
         if (!matched) {
           return next(new UnauthorizedError('Неверная почта или пароль'));
         }
-        const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', {
-          expiresIn: '7d',
-        });
+        const token = jwt.sign(
+          { _id: user._id },
+          NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+          { expiresIn: '7d' }
+        );
         return res.send({ token });
       });
     })
     .catch((err) => next(err));
 };
-
-
-// module.exports.login = (req, res, next) => {
-//   const { email, password } = req.body;
-
-//   return User.findUserByCredentials(email, password)
-//     .then(({ _id: _id }) => {
-//       const token = jwt.sign(
-//         { _id },
-//         NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
-//         { expiresIn: '7d' }
-//       );
-//       return res.send({ token });
-//     })
-//     .catch((err) => next(err));
-// };
 
 module.exports.getMyUser = (req, res, next) => {
   User.findById(req.user._id)

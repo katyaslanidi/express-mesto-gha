@@ -13,7 +13,7 @@ module.exports.registrationValidation = celebrate({
 
 module.exports.loginValidation = celebrate({
   body: Joi.object({
-    email:Joi.string().required().email(),
+    email: Joi.string().required().email(),
     password: Joi.string().required().min(6).max(30)
   })
 });
